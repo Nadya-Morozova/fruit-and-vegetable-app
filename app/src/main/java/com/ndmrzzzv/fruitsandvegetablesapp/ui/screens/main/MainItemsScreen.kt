@@ -29,6 +29,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,7 +47,7 @@ import com.ndmrzzzv.fruitsandvegetablesapp.R
 import com.ndmrzzzv.fruitsandvegetablesapp.ui.screens.main.state.ItemsState
 
 data class MainItemsScreenAction(
-    val onItemClick: (code: String) -> Unit = {},
+    val onItemClick: (item: Item) -> Unit = {},
     val getAllItemsEvent: () -> Unit = {},
 )
 
@@ -53,10 +57,11 @@ fun MainItemsScreen(
     state: ItemsState,
     actions: MainItemsScreenAction
 ) {
+    var titleOfTopBar by remember { mutableStateOf("") }
 
     Scaffold(
         modifier = Modifier.padding(top = 0.dp),
-        topBar = { ProductTopAppBar("app", actions.getAllItemsEvent) }
+        topBar = { ProductTopAppBar(titleOfTopBar, actions.getAllItemsEvent) }
     ) { padding ->
 
         Column(
@@ -66,13 +71,16 @@ fun MainItemsScreen(
 
             when (state) {
                 is ItemsState.LoadedData -> {
+                    titleOfTopBar = state.titleAndItems.first ?: ""
                     LazyColumn(
                         contentPadding = PaddingValues(vertical = 8.dp, horizontal = 8.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
                         val listOfProducts = state.titleAndItems.second ?: listOf()
                         items(listOfProducts) { item ->
-                            ProductItem(item)
+                            ProductItem(item) {
+                                actions.onItemClick(it)
+                            }
                         }
                     }
                 }
@@ -106,12 +114,14 @@ fun MainItemsScreen(
 }
 
 @Composable
-fun ProductItem(item: Item) {
+fun ProductItem(item: Item, onItemClick: (item: Item) -> Unit = {}) {
     Card(
+        onClick = { onItemClick(item) },
         colors = CardDefaults.cardColors(
             containerColor = Color(item.color ?: 0)
         ),
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier
+            .padding(16.dp)
     ) {
         Row(
             modifier = Modifier
@@ -169,15 +179,3 @@ fun ProductTopAppBar(title: String, getAllItemsEvent: () -> Unit = {}) {
 }
 
 
-//@Preview
-//@Composable
-//fun Preview() {
-//    ProductItem(
-//        item = Item(
-//            "orange",
-//            "Orange",
-//            "https://test-task-server.mediolanum.f17y.com/images/orange.png",
-//            ""
-//        )
-//    )
-//}

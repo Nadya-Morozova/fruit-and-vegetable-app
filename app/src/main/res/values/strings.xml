@@ -2,4 +2,5 @@
     <string name="app_name">FruitsAndVegetablesApp</string>
     <string name="refresh_the_list">Refresh the list</string>
     <string name="image_of_product">Image of Product</string>
+    <string name="btn_retry">Retry</string>
 </resources>

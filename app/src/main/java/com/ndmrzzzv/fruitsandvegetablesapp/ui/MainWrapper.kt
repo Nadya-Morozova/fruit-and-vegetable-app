@@ -1,5 +1,13 @@
 package com.ndmrzzzv.fruitsandvegetablesapp.ui
 
+import android.content.ClipData.Item
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavType
@@ -17,7 +25,10 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun FruitAndVegetablesApp() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "items") {
+    NavHost(
+        navController = navController,
+        startDestination = "items"
+    ) {
         composable(route = "items") {
             val viewModel = koinViewModel<MainItemsViewModel>()
             val actions = ActionsBuilder.getActions(navController, viewModel)
@@ -25,14 +36,29 @@ fun FruitAndVegetablesApp() {
         }
 
         composable(
-            route = "items/{item_id}",
-            arguments = listOf(navArgument("country_code") {
-                type = NavType.StringType
-            })
+            route = "items/{item}",
+            arguments = listOf(navArgument("item") {
+                type = NavType.ParcelableType(Item::class.java)
+            }),
+            enterTransition = {
+                fadeIn(animationSpec = tween(300, easing = LinearEasing)) +
+                        slideIntoContainer(
+                            animationSpec = tween(300, easing = EaseIn),
+                            towards = AnimatedContentTransitionScope.SlideDirection.Start
+                        )
+            },
+            exitTransition = {
+                fadeOut(animationSpec = tween(300, easing = LinearEasing)) +
+                        slideOutOfContainer(
+                            animationSpec = tween(300, easing = EaseOut),
+                            towards = AnimatedContentTransitionScope.SlideDirection.End
+                        )
+            }
+
         ) {
             val viewModel = koinViewModel<DetailsOfItemViewModel>()
-            val actions = ActionsBuilder.getActions(viewModel)
-            DetailsOfItemScreen(action = actions)
+            val actions = ActionsBuilder.getActions(navController, viewModel)
+            DetailsOfItemScreen(state = viewModel.product.collectAsState().value, action = actions)
         }
     }
 }

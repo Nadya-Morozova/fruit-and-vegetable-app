@@ -15,18 +15,18 @@ class ActionsBuilder {
             viewModel: MainItemsViewModel
         ): MainItemsScreenAction {
             return MainItemsScreenAction(
-                onItemClick = {},
-                getAllItemsEvent = {
-                    viewModel.getAllItems()
-                }
+                onItemClick = { code -> navController.navigate("items/$code") },
+                getAllItemsEvent = { viewModel.getAllItems() }
             )
         }
 
         fun getActions(
+            navController: NavController,
             viewModel: DetailsOfItemViewModel
         ): DetailsOfItemScreenAction {
             return DetailsOfItemScreenAction(
-                loadItemAgainEvent = {}
+                loadItemAgainEvent = { viewModel.getDetailOfProduct() },
+                backToMainScreen = { navController.navigateUp() }
             )
         }
 

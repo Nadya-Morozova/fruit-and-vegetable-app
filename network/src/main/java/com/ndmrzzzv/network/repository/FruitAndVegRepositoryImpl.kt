@@ -1,6 +1,5 @@
 package com.ndmrzzzv.network.repository
 
-import com.ndmrzzzv.domain.model.DetailItem
 import com.ndmrzzzv.domain.model.Item
 import com.ndmrzzzv.domain.repository.FruitAndVegRepository
 import com.ndmrzzzv.network.api.FruitAndVegApi
@@ -18,9 +17,9 @@ class FruitAndVegRepositoryImpl(
         return result.title to newListOfItems
     }
 
-    override suspend fun getDetailsOfItem(id: String?): DetailItem {
+    override suspend fun getDetailsOfItem(id: String?): String {
         val result = fruitAndVegApi.getDetailsOfItem(id)
-        return DetailItem(result.id, result.text)
+        return result.text
     }
 
 }
