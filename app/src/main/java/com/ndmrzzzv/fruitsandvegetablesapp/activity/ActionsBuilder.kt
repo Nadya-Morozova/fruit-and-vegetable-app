@@ -14,14 +14,20 @@ class ActionsBuilder {
             navController: NavController,
             viewModel: MainItemsViewModel
         ): MainItemsScreenAction {
-            return MainItemsScreenAction()
+            return MainItemsScreenAction(
+                onItemClick = {},
+                getAllItemsEvent = {
+                    viewModel.getAllItems()
+                }
+            )
         }
 
         fun getActions(
-            navController: NavController,
             viewModel: DetailsOfItemViewModel
         ): DetailsOfItemScreenAction {
-            return DetailsOfItemScreenAction()
+            return DetailsOfItemScreenAction(
+                loadItemAgainEvent = {}
+            )
         }
 
     }

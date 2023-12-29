@@ -7,7 +7,7 @@ class GetAllItemsUseCase(
     private val fruitAndVegRepository: FruitAndVegRepository
 ) {
 
-    suspend operator fun invoke(): List<Item> {
+    suspend operator fun invoke(): Pair<String?, List<Item>?> {
         return fruitAndVegRepository.getAllItems()
     }
 

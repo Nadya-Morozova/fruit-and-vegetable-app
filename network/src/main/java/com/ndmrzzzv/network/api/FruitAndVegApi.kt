@@ -11,6 +11,6 @@ interface FruitAndVegApi {
     suspend fun getAllItems(): Response
 
     @GET("texts/{itemId}")
-    suspend fun getDetailsOfItem(@Path("itemId") id: String): DetailItem
+    suspend fun getDetailsOfItem(@Path("itemId") id: String?): DetailItem
 
 }

@@ -1,6 +1,7 @@
 package com.ndmrzzzv.fruitsandvegetablesapp.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,7 +21,7 @@ fun FruitAndVegetablesApp() {
         composable(route = "items") {
             val viewModel = koinViewModel<MainItemsViewModel>()
             val actions = ActionsBuilder.getActions(navController, viewModel)
-            MainItemsScreen(actions = actions)
+            MainItemsScreen(state = viewModel.products.collectAsState().value, actions = actions)
         }
 
         composable(
@@ -30,7 +31,7 @@ fun FruitAndVegetablesApp() {
             })
         ) {
             val viewModel = koinViewModel<DetailsOfItemViewModel>()
-            val actions = ActionsBuilder.getActions(navController, viewModel)
+            val actions = ActionsBuilder.getActions(viewModel)
             DetailsOfItemScreen(action = actions)
         }
     }

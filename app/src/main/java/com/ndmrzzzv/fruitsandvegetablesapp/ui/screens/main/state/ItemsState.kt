@@ -6,8 +6,8 @@ sealed class ItemsState {
 
     class LoadingFailed(val message: String) : ItemsState()
 
-    class LoadedData(val listOfItems: List<Item>) : ItemsState()
+    class LoadedData(val titleAndItems: Pair<String?, List<Item>?>) : ItemsState()
 
-    class Loading : ItemsState()
+    data object Loading : ItemsState()
 
 }

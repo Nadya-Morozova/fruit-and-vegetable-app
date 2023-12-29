@@ -10,4 +10,6 @@ class DetailsOfItemViewModel(
     private val internetChecker: InternetChecker,
     private val stateHandle: SavedStateHandle
 ) : ViewModel() {
+
+
 }
