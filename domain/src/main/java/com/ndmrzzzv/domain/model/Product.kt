@@ -1,6 +1,7 @@
 package com.ndmrzzzv.domain.model
 
-data class Item(
+
+data class Product(
     val id: String?,
     val name: String?,
     val image: String?,

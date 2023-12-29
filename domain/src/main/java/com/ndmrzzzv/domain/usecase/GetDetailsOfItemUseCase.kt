@@ -1,13 +1,13 @@
 package com.ndmrzzzv.domain.usecase
 
-import com.ndmrzzzv.domain.repository.FruitAndVegRepository
+import com.ndmrzzzv.domain.repository.ProductsRepository
 
 class GetDetailsOfItemUseCase(
-    private val fruitAndVegRepository: FruitAndVegRepository
+    private val productsRepository: ProductsRepository
 ) {
 
     suspend operator fun invoke(id: String?): String {
-        return fruitAndVegRepository.getDetailsOfItem(id)
+        return productsRepository.getDetailsOfProduct(id)
     }
 
 }

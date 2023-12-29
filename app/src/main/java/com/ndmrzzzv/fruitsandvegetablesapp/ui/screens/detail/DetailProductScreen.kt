@@ -38,21 +38,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.ndmrzzzv.domain.model.DetailItem
+import com.ndmrzzzv.domain.model.DetailProduct
 import com.ndmrzzzv.fruitsandvegetablesapp.R
-import com.ndmrzzzv.fruitsandvegetablesapp.ui.screens.detail.state.DetailItemState
 
-data class DetailsOfItemScreenAction(
+data class DetailProductScreenAction(
     val loadItemAgainEvent: () -> Unit = {},
     val backToMainScreen: () -> Unit = {}
 )
 
 @Composable
-fun DetailsOfItemScreen(
-    action: DetailsOfItemScreenAction,
-    state: DetailItemState
+fun DetailProductScreen(
+    action: DetailProductScreenAction,
+    state: DetailProductState
 ) {
-
     var titleOfTopBar by remember { mutableStateOf("") }
 
     Scaffold(
@@ -64,19 +62,19 @@ fun DetailsOfItemScreen(
         ) {
 
             when (state) {
-                is DetailItemState.LoadedData -> {
-                    val product = state.item
+                is DetailProductState.LoadedData -> {
+                    val product = state.product
                     titleOfTopBar = product?.name ?: ""
                     ProductBlock(item = product)
                 }
 
-                is DetailItemState.LoadingFailed -> {
+                is DetailProductState.LoadingFailed -> {
                     RetryBlock(message = state.message) {
                         action.loadItemAgainEvent
                     }
                 }
 
-                is DetailItemState.Loading -> {
+                is DetailProductState.Loading -> {
                     LoadingBlock()
                 }
             }
@@ -116,7 +114,7 @@ fun ProductTopAppBar(title: String, backToMainScreen: () -> Unit = {}) {
 }
 
 @Composable
-fun ProductBlock(item: DetailItem?) {
+fun ProductBlock(item: DetailProduct?) {
     Card(
         colors = CardDefaults.cardColors(
             containerColor = Color(item?.color ?: 0)
@@ -135,7 +133,7 @@ fun ProductBlock(item: DetailItem?) {
                     .size(80.dp)
                     .padding(top = 8.dp),
                 error = painterResource(id = R.drawable.no_photos),
-                model = "https://test-task-server.mediolanum.f17y.com${item?.image}",
+                model = "${item?.image}",
                 contentDescription = stringResource(id = R.string.image_of_product)
             )
 
@@ -145,7 +143,7 @@ fun ProductBlock(item: DetailItem?) {
                     .padding(16.dp),
                 fontSize = 18.sp,
                 text = item?.text ?: "",
-                color = Color.Black,
+                color = Color.White,
             )
         }
     }

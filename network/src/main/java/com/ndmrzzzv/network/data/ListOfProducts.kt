@@ -4,10 +4,10 @@ import com.google.gson.annotations.SerializedName
 
 data class Response(
     @SerializedName("title") val title: String?,
-    @SerializedName("items") val items: List<ListItem>?
+    @SerializedName("items") val items: List<ListOfProducts>?
 )
 
-data class ListItem(
+data class ListOfProducts(
     @SerializedName("id") val id: String?,
     @SerializedName("name") val name: String?,
     @SerializedName("image") val image: String?,

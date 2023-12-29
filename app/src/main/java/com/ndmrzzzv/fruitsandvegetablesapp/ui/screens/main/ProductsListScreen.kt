@@ -42,26 +42,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.ndmrzzzv.domain.model.Item
+import com.ndmrzzzv.domain.model.Product
 import com.ndmrzzzv.fruitsandvegetablesapp.R
-import com.ndmrzzzv.fruitsandvegetablesapp.ui.screens.main.state.ItemsState
 
-data class MainItemsScreenAction(
-    val onItemClick: (item: Item) -> Unit = {},
+data class ProductsListScreenAction(
+    val onItemClick: (product: Product) -> Unit = {},
     val getAllItemsEvent: () -> Unit = {},
 )
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainItemsScreen(
-    state: ItemsState,
-    actions: MainItemsScreenAction
+fun ProductsListScreen(
+    state: ProductsListState,
+    actions: ProductsListScreenAction
 ) {
-    var titleOfTopBar by remember { mutableStateOf("") }
+    var topBarTitleState by remember { mutableStateOf("") }
 
     Scaffold(
         modifier = Modifier.padding(top = 0.dp),
-        topBar = { ProductTopAppBar(titleOfTopBar, actions.getAllItemsEvent) }
+        topBar = { ProductTopAppBar(topBarTitleState, actions.getAllItemsEvent) }
     ) { padding ->
 
         Column(
@@ -70,14 +69,16 @@ fun MainItemsScreen(
         ) {
 
             when (state) {
-                is ItemsState.LoadedData -> {
-                    titleOfTopBar = state.titleAndItems.first ?: ""
+                is ProductsListState.LoadedData -> {
+                    val topBarTitle = state.data.first ?: ""
+                    val products = state.data.second ?: listOf()
+
+                    topBarTitleState = topBarTitle
                     LazyColumn(
                         contentPadding = PaddingValues(vertical = 8.dp, horizontal = 8.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        val listOfProducts = state.titleAndItems.second ?: listOf()
-                        items(listOfProducts) { item ->
+                        items(products) { item ->
                             ProductItem(item) {
                                 actions.onItemClick(it)
                             }
@@ -85,7 +86,7 @@ fun MainItemsScreen(
                     }
                 }
 
-                is ItemsState.Loading -> {
+                is ProductsListState.Loading -> {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -97,7 +98,7 @@ fun MainItemsScreen(
                     }
                 }
 
-                is ItemsState.LoadingFailed -> {
+                is ProductsListState.LoadingFailed -> {
                     Text(
                         modifier = Modifier
                             .padding(16.dp)
@@ -114,11 +115,14 @@ fun MainItemsScreen(
 }
 
 @Composable
-fun ProductItem(item: Item, onItemClick: (item: Item) -> Unit = {}) {
+fun ProductItem(
+    product: Product,
+    onItemClick: (product: Product) -> Unit = {}
+) {
     Card(
-        onClick = { onItemClick(item) },
+        onClick = { onItemClick(product) },
         colors = CardDefaults.cardColors(
-            containerColor = Color(item.color ?: 0)
+            containerColor = Color(product.color ?: 0)
         ),
         modifier = Modifier
             .padding(16.dp)
@@ -135,14 +139,14 @@ fun ProductItem(item: Item, onItemClick: (item: Item) -> Unit = {}) {
                     .weight(1f)
                     .padding(start = 8.dp),
                 fontSize = 20.sp,
-                text = item.name ?: "",
+                text = product.name ?: "",
                 color = Color.White,
             )
             AsyncImage(
                 modifier = Modifier
                     .size(80.dp),
                 error = painterResource(id = R.drawable.no_photos),
-                model = "https://test-task-server.mediolanum.f17y.com${item.image}",
+                model = product.image,
                 contentDescription = stringResource(id = R.string.image_of_product)
             )
         }

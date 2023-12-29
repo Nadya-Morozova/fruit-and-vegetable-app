@@ -6,12 +6,12 @@ import com.ndmrzzzv.network.module.networkModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 
-class FruitAndVegApp : Application() {
+class ProductsApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
         startKoin {
-            androidContext(this@FruitAndVegApp)
+            androidContext(this@ProductsApplication)
             modules(listOf(networkModule, appModule))
         }
     }

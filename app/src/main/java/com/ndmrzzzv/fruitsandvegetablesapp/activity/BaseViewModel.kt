@@ -10,7 +10,7 @@ open class BaseViewModel : ViewModel() {
 
     val scopeWithExceptionHandler =
         viewModelScope + CoroutineExceptionHandler { context, throwable ->
-            Log.d("Coroutine Exception Handler", throwable.message.toString())
+            Log.e("Coroutine Exception Handler", throwable.message.toString(), throwable)
         }
 
 }

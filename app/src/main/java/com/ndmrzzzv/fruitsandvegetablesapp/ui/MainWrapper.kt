@@ -1,6 +1,5 @@
 package com.ndmrzzzv.fruitsandvegetablesapp.ui
 
-import android.content.ClipData.Item
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.EaseOut
@@ -15,30 +14,29 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.ndmrzzzv.fruitsandvegetablesapp.activity.ActionsBuilder
-import com.ndmrzzzv.fruitsandvegetablesapp.ui.screens.detail.DetailsOfItemScreen
-import com.ndmrzzzv.fruitsandvegetablesapp.ui.screens.detail.DetailsOfItemViewModel
-import com.ndmrzzzv.fruitsandvegetablesapp.ui.screens.main.MainItemsScreen
-import com.ndmrzzzv.fruitsandvegetablesapp.ui.screens.main.MainItemsViewModel
+import com.ndmrzzzv.fruitsandvegetablesapp.ui.screens.detail.DetailProductScreen
+import com.ndmrzzzv.fruitsandvegetablesapp.ui.screens.detail.DetailProductViewModel
+import com.ndmrzzzv.fruitsandvegetablesapp.ui.screens.main.ProductsListScreen
+import com.ndmrzzzv.fruitsandvegetablesapp.ui.screens.main.ProductsListViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun FruitAndVegetablesApp() {
+fun ProductsApp() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
         startDestination = "items"
     ) {
         composable(route = "items") {
-            val viewModel = koinViewModel<MainItemsViewModel>()
+            val viewModel = koinViewModel<ProductsListViewModel>()
             val actions = ActionsBuilder.getActions(navController, viewModel)
-            MainItemsScreen(state = viewModel.products.collectAsState().value, actions = actions)
+            ProductsListScreen(state = viewModel.products.collectAsState().value, actions = actions)
         }
 
         composable(
             route = "items/{item}",
             arguments = listOf(navArgument("item") {
-                type = NavType.ParcelableType(Item::class.java)
+                type = NavType.StringType
             }),
             enterTransition = {
                 fadeIn(animationSpec = tween(300, easing = LinearEasing)) +
@@ -56,9 +54,9 @@ fun FruitAndVegetablesApp() {
             }
 
         ) {
-            val viewModel = koinViewModel<DetailsOfItemViewModel>()
+            val viewModel = koinViewModel<DetailProductViewModel>()
             val actions = ActionsBuilder.getActions(navController, viewModel)
-            DetailsOfItemScreen(state = viewModel.product.collectAsState().value, action = actions)
+            DetailProductScreen(state = viewModel.product.collectAsState().value, action = actions)
         }
     }
 }

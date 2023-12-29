@@ -1,28 +1,27 @@
 package com.ndmrzzzv.fruitsandvegetablesapp.ui.screens.main
 
-import com.ndmrzzzv.domain.usecase.GetAllItemsUseCase
+import com.ndmrzzzv.domain.usecase.GetAllProductsUseCase
 import com.ndmrzzzv.fruitsandvegetablesapp.activity.BaseViewModel
-import com.ndmrzzzv.fruitsandvegetablesapp.ui.screens.main.state.ItemsState
 import com.ndmrzzzv.fruitsandvegetablesapp.utils.InternetChecker
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class MainItemsViewModel(
-    private val getAllItemsUseCase: GetAllItemsUseCase,
+class ProductsListViewModel(
+    private val getAllProductsUseCase: GetAllProductsUseCase,
     private val internetChecker: InternetChecker
 ) : BaseViewModel() {
 
-    private val _products = MutableStateFlow<ItemsState>(ItemsState.Loading)
+    private val _products = MutableStateFlow<ProductsListState>(ProductsListState.Loading)
     val products = _products.asStateFlow()
 
     fun getAllItems() {
         scopeWithExceptionHandler.launch {
-            _products.value = ItemsState.Loading
+            _products.value = ProductsListState.Loading
             if (internetChecker.checkConnection()) {
-                _products.value = ItemsState.LoadedData(getAllItemsUseCase())
+                _products.value = ProductsListState.LoadedData(getAllProductsUseCase())
             } else {
-                _products.value = ItemsState.LoadingFailed("Network error")
+                _products.value = ProductsListState.LoadingFailed("Network error")
             }
         }
     }

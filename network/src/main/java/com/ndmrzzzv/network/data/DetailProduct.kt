@@ -2,7 +2,6 @@ package com.ndmrzzzv.network.data
 
 import com.google.gson.annotations.SerializedName
 
-class DetailItem(
-    @SerializedName("id") val id: String?,
+class DetailProduct(
     @SerializedName("text") val text: String
 )
