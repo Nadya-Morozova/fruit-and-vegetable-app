@@ -3,6 +3,17 @@
 package com.ndmrzzzv.fruitsandvegetablesapp.ui.screens.main
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +43,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +56,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.ndmrzzzv.domain.model.Product
 import com.ndmrzzzv.fruitsandvegetablesapp.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 data class ProductsListScreenAction(
     val onItemClick: (product: Product) -> Unit = {},
@@ -57,14 +71,32 @@ fun ProductsListScreen(
     actions: ProductsListScreenAction
 ) {
     var topBarTitleState by remember { mutableStateOf("") }
+    val listVisibility = remember {
+        MutableTransitionState(false).apply {
+            targetState = true
+        }
+    }
+
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         modifier = Modifier.padding(top = 0.dp),
-        topBar = { ProductTopAppBar(topBarTitleState, actions.getAllItemsEvent) }
+        topBar = {
+            ProductTopAppBar(topBarTitleState) {
+                coroutineScope.launch {
+                    listVisibility.targetState = false
+                    delay(500)
+                    actions.getAllItemsEvent()
+                    listVisibility.targetState = true
+                }
+            }
+        }
     ) { padding ->
 
         Column(
-            modifier = Modifier.padding(padding),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
 
@@ -74,19 +106,53 @@ fun ProductsListScreen(
                     val products = state.data.second ?: listOf()
 
                     topBarTitleState = topBarTitle
-                    LazyColumn(
-                        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 8.dp),
+
+                    val transition =
+                        updateTransition(transitionState = listVisibility, label = "listTransition")
+                    val listItemsPaddingState = transition.animateDp(
+                        label = "listItemsPadding",
+                        transitionSpec = {
+                            tween(durationMillis = 1000, easing = LinearOutSlowInEasing)
+                        }
+                    ) { isVisible ->
+                        if (isVisible) 12.dp else 0.dp
+                    }
+
+                    Column(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        items(products) { item ->
-                            ProductItem(item) {
-                                actions.onItemClick(it)
+                        AnimatedVisibility(
+                            visibleState = listVisibility,
+                            enter = fadeIn(
+                                animationSpec = tween(
+                                    durationMillis = 1000,
+                                    easing = LinearOutSlowInEasing
+                                )
+                            ),
+                            exit = ExitTransition.None,
+                        ) {
+                            LazyColumn(
+                                contentPadding = PaddingValues(vertical = 8.dp, horizontal = 8.dp),
+                                modifier = Modifier.fillMaxSize(),
+                            ) {
+                                items(products) { item ->
+                                    ProductItem(
+                                        item,
+                                        modifier = Modifier.padding(
+                                            horizontal = 16.dp,
+                                            vertical = listItemsPaddingState.value
+                                        )
+                                    ) {
+                                        actions.onItemClick(it)
+                                    }
+                                }
                             }
                         }
                     }
                 }
 
                 is ProductsListState.Loading -> {
+                    topBarTitleState = ""
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -117,6 +183,7 @@ fun ProductsListScreen(
 @Composable
 fun ProductItem(
     product: Product,
+    modifier: Modifier = Modifier,
     onItemClick: (product: Product) -> Unit = {}
 ) {
     Card(
@@ -124,8 +191,7 @@ fun ProductItem(
         colors = CardDefaults.cardColors(
             containerColor = Color(product.color ?: 0)
         ),
-        modifier = Modifier
-            .padding(16.dp)
+        modifier = modifier
     ) {
         Row(
             modifier = Modifier
@@ -161,13 +227,18 @@ fun ProductTopAppBar(title: String, getAllItemsEvent: () -> Unit = {}) {
             containerColor = Color(red = 205, green = 21, blue = 133)
         ),
         title = {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentWidth(align = Alignment.CenterHorizontally),
-                text = title,
-                color = Color.White
-            )
+            AnimatedContent(
+                targetState = title,
+                transitionSpec = { fadeIn() togetherWith fadeOut() }, label = ""
+            ) { text ->
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentWidth(align = Alignment.CenterHorizontally),
+                    text = text,
+                    color = Color.White
+                )
+            }
         },
         actions = {
             IconButton(onClick = { getAllItemsEvent() }) {

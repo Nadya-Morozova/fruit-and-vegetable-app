@@ -15,6 +15,10 @@ class ProductsListViewModel(
     private val _products = MutableStateFlow<ProductsListState>(ProductsListState.Loading)
     val products = _products.asStateFlow()
 
+    init {
+        getAllItems()
+    }
+
     fun getAllItems() {
         scopeWithExceptionHandler.launch {
             _products.value = ProductsListState.Loading

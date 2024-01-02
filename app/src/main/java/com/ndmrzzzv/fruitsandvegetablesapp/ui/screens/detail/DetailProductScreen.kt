@@ -1,5 +1,9 @@
 package com.ndmrzzzv.fruitsandvegetablesapp.ui.screens.detail
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -65,7 +69,7 @@ fun DetailProductScreen(
                 is DetailProductState.LoadedData -> {
                     val product = state.product
                     titleOfTopBar = product?.name ?: ""
-                    ProductBlock(item = product)
+                    ProductBlock(product)
                 }
 
                 is DetailProductState.LoadingFailed -> {
@@ -114,37 +118,42 @@ fun ProductTopAppBar(title: String, backToMainScreen: () -> Unit = {}) {
 }
 
 @Composable
-fun ProductBlock(item: DetailProduct?) {
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = Color(item?.color ?: 0)
-        ),
-        modifier = Modifier
-            .padding(16.dp)
-            .height(250.dp)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
+fun ProductBlock(itemProduct: DetailProduct?) {
+    AnimatedContent(
+        targetState = itemProduct,
+        transitionSpec = { fadeIn() togetherWith fadeOut() }, label = ""
+    ) { item ->
+        Card(
+            colors = CardDefaults.cardColors(
+                containerColor = Color(item?.color ?: 0)
+            ),
+            modifier = Modifier
+                .padding(16.dp)
+                .height(250.dp)
         ) {
-            AsyncImage(
-                modifier = Modifier
-                    .size(80.dp)
-                    .padding(top = 8.dp),
-                error = painterResource(id = R.drawable.no_photos),
-                model = "${item?.image}",
-                contentDescription = stringResource(id = R.string.image_of_product)
-            )
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
+                AsyncImage(
+                    modifier = Modifier
+                        .size(80.dp)
+                        .padding(top = 8.dp),
+                    error = painterResource(id = R.drawable.no_photos),
+                    model = "${item?.image}",
+                    contentDescription = stringResource(id = R.string.image_of_product)
+                )
 
-            Text(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(16.dp),
-                fontSize = 18.sp,
-                text = item?.text ?: "",
-                color = Color.White,
-            )
+                Text(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(16.dp),
+                    fontSize = 18.sp,
+                    text = item?.text ?: "",
+                    color = Color.White,
+                )
+            }
         }
     }
 }
